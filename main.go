@@ -2,11 +2,11 @@ package main
 
 import (
 	fiberSwagger "github.com/arsmn/fiber-swagger/v2"
-	_ "github.com/arsmn/fiber-swagger/v2/example/docs"
 	"github.com/gofiber/fiber/v2"
-	// "github.com/arsmn/fiber-swagger/v2"
 	"github.com/FriendlyUser/go_fin_server/pkg/finance"
 	"github.com/FriendlyUser/go_fin_server/pkg/rssData"
+	"github.com/FriendlyUser/go_fin_server/pkg/types"
+	_ "github.com/FriendlyUser/go_fin_server/docs"
 )
 
 // @title Fiber Example API
@@ -20,6 +20,7 @@ import (
 // @host localhost:8080
 // @BasePath /
 func main() {
+	// TODO function to validate env vars goes here
 	app := fiber.New()
 	// view swagger docs at http://localhost:8080/swagger/index.html
 	app.Get("/swagger/*", fiberSwagger.Handler)
@@ -38,22 +39,13 @@ func main() {
 // @Accept  json
 // @Produce  json
 // @Param id path int true "Account ID"
-// @Success 200 {object} Account
-// @Failure 400 {object} HTTPError
-// @Failure 404 {object} HTTPError
-// @Failure 500 {object} HTTPError
+// @Success 200 {object} types.Account
+// @Failure 400 {object} types.HTTPError
+// @Failure 404 {object} types.HTTPError
+// @Failure 500 {object} types.HTTPError
 // @Router /accounts/{id} [get]
 func ShowAccount(c *fiber.Ctx) error {
-	return c.JSON(Account{
+	return c.JSON(types.Account{
 		Id: c.Params("id"),
 	})
-}
-
-type Account struct {
-	Id string
-}
-
-type HTTPError struct {
-	status  string
-	message string
 }

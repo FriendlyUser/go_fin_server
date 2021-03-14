@@ -4,6 +4,7 @@ import (
 	"github.com/piquette/finance-go/quote"
 	"fmt"
 	"unsafe"
+	"github.com/FriendlyUser/go_fin_server/pkg/types"
 )
 
 // ShowTickers godoc
@@ -12,9 +13,9 @@ import (
 // @Accept  json
 // @Produce  json
 // @Success 200 {object} Message
-// @Failure 400 {object} HTTPError
-// @Failure 404 {object} HTTPError
-// @Failure 500 {object} HTTPError
+// @Failure 400 {object} types.HTTPError
+// @Failure 404 {object} types.HTTPError
+// @Failure 500 {object} types.HTTPError
 // @Router /tickers [get]
 func ShowTickers(c *fiber.Ctx) error {
 	
@@ -41,7 +42,7 @@ func ShowTickers(c *fiber.Ctx) error {
 			q.ExchangeID})
 	}
 
-	return c.JSON(Message{Data: stock_data, Index: used_symbols, Columns: columns})
+	return c.JSON(types.Message{Data: stock_data, Index: used_symbols, Columns: columns})
 }
 
 
@@ -59,11 +60,4 @@ func queryMulti(ctx *fiber.Ctx, key string) (values []string) {
 // See https://groups.google.com/forum/#!msg/Golang-Nuts/ENgbUzYvCuU/90yGx7GUAgAJ .
 var getString = func(b []byte) string {
 	return *(*string)(unsafe.Pointer(&b))
-}
-
-// from golang serverless function
-type Message struct {
-	Data [][]string `json:"data"`
-	Columns [8]string `json:"columns"`
-	Index []string `json:"index"`
 }

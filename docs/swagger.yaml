@@ -1,13 +1,6 @@
 basePath: /
 definitions:
-  main.Account:
-    properties:
-      id:
-        type: string
-    type: object
-  main.HTTPError:
-    type: object
-  main.Message:
+  finance.Message:
     properties:
       columns:
         items:
@@ -23,6 +16,29 @@ definitions:
         items:
           type: string
         type: array
+    type: object
+  types.Account:
+    properties:
+      id:
+        type: string
+    type: object
+  types.FeedBody:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/types.FeedData'
+        type: array
+    type: object
+  types.FeedData:
+    properties:
+      channel:
+        type: string
+      title:
+        type: string
+      url:
+        type: string
+    type: object
+  types.HTTPError:
     type: object
 host: localhost:8080
 info:
@@ -55,20 +71,45 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.Account'
+            $ref: '#/definitions/types.Account'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/main.HTTPError'
+            $ref: '#/definitions/types.HTTPError'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/main.HTTPError'
+            $ref: '#/definitions/types.HTTPError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/main.HTTPError'
+            $ref: '#/definitions/types.HTTPError'
       summary: Show a account
+  /rss-data:
+    get:
+      consumes:
+      - application/json
+      description: send mongodb data
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.FeedBody'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/types.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.HTTPError'
+      summary: Get mongodb data and send it back
   /tickers:
     get:
       consumes:
@@ -80,18 +121,18 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.Message'
+            $ref: '#/definitions/finance.Message'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/main.HTTPError'
+            $ref: '#/definitions/types.HTTPError'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/main.HTTPError'
+            $ref: '#/definitions/types.HTTPError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/main.HTTPError'
+            $ref: '#/definitions/types.HTTPError'
       summary: Get Yahoo stock tickers
 swagger: "2.0"

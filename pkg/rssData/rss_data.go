@@ -10,6 +10,7 @@ import (
 	"os"
 	"fmt"
 	"log"
+	"github.com/FriendlyUser/go_fin_server/pkg/types"
 )
 
 // GetRssData godoc
@@ -17,10 +18,10 @@ import (
 // @Description send mongodb data
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} FeedBody
-// @Failure 400 {object} HTTPError
-// @Failure 404 {object} HTTPError
-// @Failure 500 {object} HTTPError
+// @Success 200 {object} types.FeedBody
+// @Failure 400 {object} types.HTTPError
+// @Failure 404 {object} types.HTTPError
+// @Failure 500 {object} types.HTTPError
 // @Router /rss-data [get]
 func GetRssData(c *fiber.Ctx) error {
 	client, err := GetMongoClient()
@@ -30,15 +31,18 @@ func GetRssData(c *fiber.Ctx) error {
         log.Fatal(err)
     }
 	collection := client.Database("heroku_49s52xjc").Collection("feeds")
-	var results []FeedData
-	cursor, _ := collection.Find(context.TODO(), bson.D{})
+	var results []types.FeedData
+	options := options.Find()
+	// Limit by 10 documents only 
+	options.SetLimit(0)
+	cursor, _ := collection.Find(context.TODO(), bson.D{}, options)
 	if cursor == nil {
 		return nil
 	}
 	if err = cursor.All(context.TODO(), &results); err != nil {
 		log.Fatal(err)
 	  }
-	return c.JSON(FeedBody{Data: results})
+	return c.JSON(types.FeedBody{Data: results})
 }
 
 func GetMongoClient() (*mongo.Client, error) {
@@ -49,14 +53,4 @@ func GetMongoClient() (*mongo.Client, error) {
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(db_uri))
 	defer cancel()
 	return client, err
-}
-
-type FeedData struct {
-	Title string `json:"title" bson:"title"`
-	Url string `json:"url" bson:"url"`
-	Channel string `json:"channel" bson:"channel"`
-}
-
-type FeedBody struct {
-	Data[] FeedData `json:"data"`
 }
