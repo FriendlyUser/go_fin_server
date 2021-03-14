@@ -1,7 +1,4 @@
-// pulls data from yahoo finance and returns data in json format
-package finance
-
-// http://localhost:3000/api/v1/book?quotes=BB.TO,ACB.TO
+package finance 
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/piquette/finance-go/quote"
@@ -9,27 +6,17 @@ import (
 	"unsafe"
 )
 
-
-// from golang serverless function
-type Message struct {
-	Data [][]string `json:"data"`
-	Columns [8]string `json:"columns"`
-	Index []string `json:"index"`
-}
-
-// GetTickersPandas godoc
+// ShowTickers godoc
 // @Summary Get Yahoo stock tickers
 // @Description get tickers in pandas format
 // @Accept  json
 // @Produce  json
-// @Param id path int true "Account ID"
-// @Success 200 {object} Account
+// @Success 200 {object} Message
 // @Failure 400 {object} HTTPError
 // @Failure 404 {object} HTTPError
 // @Failure 500 {object} HTTPError
-// @Router /tickers?=BB.TO [get]
-// @BasePath /tickers?quotes=BB.TO
-func GetTickersPandas(c *fiber.Ctx) error {
+// @Router /tickers [get]
+func ShowTickers(c *fiber.Ctx) error {
 	
 	quotes := queryMulti(c, "quotes")
 	iter := quote.List(quotes)
@@ -57,6 +44,7 @@ func GetTickersPandas(c *fiber.Ctx) error {
 	return c.JSON(Message{Data: stock_data, Index: used_symbols, Columns: columns})
 }
 
+
 func queryMulti(ctx *fiber.Ctx, key string) (values []string) {
 	valuesBytes := ctx.Context().QueryArgs().PeekMulti(key)
 	values = make([]string, len(valuesBytes))
@@ -71,4 +59,11 @@ func queryMulti(ctx *fiber.Ctx, key string) (values []string) {
 // See https://groups.google.com/forum/#!msg/Golang-Nuts/ENgbUzYvCuU/90yGx7GUAgAJ .
 var getString = func(b []byte) string {
 	return *(*string)(unsafe.Pointer(&b))
+}
+
+// from golang serverless function
+type Message struct {
+	Data [][]string `json:"data"`
+	Columns [8]string `json:"columns"`
+	Index []string `json:"index"`
 }

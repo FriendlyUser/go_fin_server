@@ -4,7 +4,9 @@ import (
 	fiberSwagger "github.com/arsmn/fiber-swagger/v2"
 	_ "github.com/arsmn/fiber-swagger/v2/example/docs"
 	"github.com/gofiber/fiber/v2"
+	// "github.com/arsmn/fiber-swagger/v2"
 	"github.com/FriendlyUser/go_fin_server/pkg/finance"
+	"github.com/FriendlyUser/go_fin_server/pkg/rssData"
 )
 
 // @title Fiber Example API
@@ -21,9 +23,11 @@ func main() {
 	app := fiber.New()
 	// view swagger docs at http://localhost:8080/swagger/index.html
 	app.Get("/swagger/*", fiberSwagger.Handler)
+	
+	app.Get("/tickers", finance.ShowTickers)
 
+	app.Get("/rss-data", rssData.GetRssData)
 	app.Get("/accounts/:id", ShowAccount)
-	app.Get("/tickers", finance.GetTickersPandas)
 	app.Listen(":8080")
 }
 
